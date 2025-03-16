@@ -2,20 +2,17 @@ import pytest
 from gatherup_api_service import app
 from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
+from bson import ObjectId
 
-# Test database setup
-TEST_DB_NAME = "test_event_db"
-TEST_MONGO_URI = f"mongodb://localhost:27017/{TEST_DB_NAME}"
-
+load_dotenv()
 
 @pytest.fixture(scope="module")
 def test_client():
     app.config["TESTING"] = True
 
-
-    os.environ["MONGO_URI"] = TEST_MONGO_URI  # Ensure Flask connects to test DB
     client = app.test_client()
-    test_mongo_client = MongoClient(TEST_MONGO_URI)
+    test_mongo_client = MongoClient(os.getenv("MONGO_URI"))
     db = test_mongo_client.get_database()
 
     # Sample test data
@@ -44,6 +41,10 @@ def test_client():
         }
     ]
 
+    for doc in test_events:
+        # Create a new ObjectId and convert it to a string
+        doc["_id"] = str(ObjectId())
+
     # Insert test data
     db.events.insert_many(test_events)
 
@@ -51,7 +52,6 @@ def test_client():
 
     # Cleanup: Remove test data after tests
     db.events.delete_many({})
-    del os.environ["MONGO_URI"]
 
 @pytest.mark.parametrize("query_params, expected_count", [
     ({"state": "NY"}, 1),  # Only 1 event in NY
