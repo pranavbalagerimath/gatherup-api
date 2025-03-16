@@ -1,7 +1,7 @@
-Flask==2.2.2
-bcrypt==4.0.1
-pandas==1.5.3
-psycopg2==2.9.6
-pymongo==4.3.3
-python-dotenv==0.21.0
+Flask
+bcrypt
+pandas
+psycopg2
+pymongo
+python-dotenv
 pytest
