@@ -1,7 +1,5 @@
 import os
 from dotenv import load_dotenv
-import mysql.connector
-from bson import ObjectId
 import psycopg2
 
 load_dotenv()
