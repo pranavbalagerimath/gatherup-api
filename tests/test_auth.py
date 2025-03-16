@@ -1,8 +1,14 @@
 import pytest
 import bcrypt
-from gatherup_api_service import app  # Assuming your Flask app is in a file named app.py
-from database_utils import get_sql_database_connection, execute_sql_query, commit
 import uuid
+import sys
+import os
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
+
+from gatherup_api_service import app  # Assuming your Flask app is in a file named app.py
+from database_utils import execute_sql_query, commit
 
 # Test user credentials
 TEST_USER = {

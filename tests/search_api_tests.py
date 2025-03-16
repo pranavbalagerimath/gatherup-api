@@ -1,8 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
-from flask import Flask
-from gatherup_api_service import app  # Import Flask app and search function
-from mongo_database_utils import search_events
+from gatherup_api_service import app
 from pymongo import MongoClient
 import os
 
