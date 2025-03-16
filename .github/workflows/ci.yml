@@ -10,7 +10,7 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: test_db
+          POSTGRES_DB: gatherup
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_password
         ports:
@@ -36,7 +36,7 @@ jobs:
 
       - name: Initialize Database (create tables)
         run: |
-          PGPASSWORD=test_password psql -h localhost -U test_user -d test_db -f init.sql
+          PGPASSWORD=test_password psql -h localhost -U test_user -d gatherup -f init.sql
 
       - name: Run tests
         env:
