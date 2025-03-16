@@ -1,9 +1,11 @@
 from pymongo import MongoClient
+import os
 
 DATABASE_NAME = 'event_data'
 EVENT_COLLECTION = 'events'
-client = MongoClient("mongodb://localhost:27017/")
-db = client[DATABASE_NAME]
+MONGO_URI = os.getenv("MONGO_URI", f"mongodb://localhost:27017/{DATABASE_NAME}")
+client = MongoClient(MONGO_URI)
+db = client.get_database()
 
 def search_events(search_params):
     collection = db[EVENT_COLLECTION]

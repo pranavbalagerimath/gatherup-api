@@ -169,3 +169,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+#Credentials
+gatherup-453505-046b9336c255.json
+
+.idea/

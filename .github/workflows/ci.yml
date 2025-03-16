@@ -1,0 +1,47 @@
+name: CI Workflow
+on:
+  push:
+    branches:
+      - development
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Initialize Database (create tables)
+        run: |
+          PGPASSWORD=test_password psql -h localhost -U test_user -d test_db -f init.sql
+
+      - name: Run tests
+        env:
+          SQL_USER: test_user
+          SQL_PASSWORD: test_password
+          SQL_HOST: localhost
+          SQL_PORT: 5432
+        run: pytest

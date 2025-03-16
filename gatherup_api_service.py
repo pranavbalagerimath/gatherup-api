@@ -3,10 +3,16 @@ import bcrypt
 import pandas as pd
 from database_utils import execute_sql_query, get_sql_database_connection
 from datetime import datetime, timedelta
-
 from mongo_database_utils import search_events
+import os
+from pymongo import MongoClient
 
 app = Flask(__name__)
+
+# Use environment variable to determine which database to connect to
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/event_db")
+mongo_client = MongoClient(MONGO_URI)
+db = mongo_client.get_database()
 
 # Register User Endpoint
 @app.route('/register', methods=['POST'])
