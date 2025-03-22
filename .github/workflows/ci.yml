@@ -61,7 +61,11 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
