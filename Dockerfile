@@ -10,8 +10,8 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port 5000 for Flask
-EXPOSE 5000
+# Expose port 8080 for Flask
+EXPOSE 8080
 
 # Run the application
 CMD ["python", "gatherup_api_service.py"]
