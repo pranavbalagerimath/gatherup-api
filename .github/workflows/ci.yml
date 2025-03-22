@@ -82,4 +82,4 @@ jobs:
             --region=${{ env.REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars SQL_USER=${{ secrets.SQL_USER }},SQL_PASSWORD=${{ secrets.SQL_PASSWORD }},MONGO_URI=${{ secrets.MONGO_URI }}, SQL_HOST=${{ secrets.SQL_HOST }}
+            --set-env-vars=SQL_USER=${{ secrets.SQL_USER }},SQL_PASSWORD=${{ secrets.SQL_PASSWORD }},MONGO_URI=${{ secrets.MONGO_URI }}, SQL_HOST=${{ secrets.SQL_HOST }}
