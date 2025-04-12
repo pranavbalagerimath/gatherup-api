@@ -23,9 +23,18 @@ def get_sql_database_connection():
     return conn
 
 def execute_sql_query(query, args=None):
-    cursor = get_sql_database_connection().cursor()
-    cursor.execute(query, args)
-    return cursor
+    try:
+        conn = get_sql_database_connection()
+        cursor = conn.cursor()
+        print(f"Executing query: {query}")
+        if args:
+            print(f"With arguments: {args}")
+        cursor.execute(query, args)
+        return cursor
+    except Exception as e:
+        print(f"Database error: {str(e)}")
+        raise
+
 
 def commit():
     get_sql_database_connection().commit()

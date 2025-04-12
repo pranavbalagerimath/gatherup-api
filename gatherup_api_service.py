@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import bcrypt
 import pandas as pd
+from flask_cors import CORS
 from database_utils import execute_sql_query, get_sql_database_connection
 from datetime import datetime, timedelta
 from mongo_database_utils import search_events
@@ -9,6 +10,12 @@ import jwt
 from functools import wraps
 
 app = Flask(__name__)
+
+CORS(app)
+
+#JWT token that is returned after login, and then is used for session management.
+#For all subsequent requests, the JWT token is used to authenticate the user.
+
 SECRET_KEY = os.getenv("SECRET_KEY", "")
 TOKEN_EXPIRATION_TIME_IN_HOURS = 5
 
@@ -49,6 +56,7 @@ def register():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+    # Optional fields
     full_name = data.get('full_name', '')
     bio = data.get('bio', '')
     location = data.get('location', '')
@@ -56,7 +64,7 @@ def register():
     if not username or not email or not password:
         return jsonify({"error": "Username, email, and password are required"}), 400
 
-    existing_user_details_query = """ select username, email from users"""
+    existing_user_details_query = """select username, email from users"""
     cursor = execute_sql_query(existing_user_details_query)
     results = cursor.fetchall()
     user_df = pd.DataFrame(results, columns=["username", "email"])
@@ -104,7 +112,6 @@ def login():
         return jsonify({"error": "Invalid username or password"}), 401
 
     stored_hash = result[0]
-
     # Verify the password
     if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
         token = jwt.encode(
