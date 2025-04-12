@@ -1,7 +1,8 @@
 Flask
 bcrypt
 pandas
-psycopg2
+psycopg2-binary
 pymongo
 python-dotenv
 pytest
+PyJWT

@@ -4,8 +4,41 @@ import pandas as pd
 from database_utils import execute_sql_query, get_sql_database_connection
 from datetime import datetime, timedelta
 from mongo_database_utils import search_events
+import os
+import jwt
+from functools import wraps
 
 app = Flask(__name__)
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+TOKEN_EXPIRATION_TIME_IN_HOURS = 5
+
+# Decorator to require token
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        # Look for token in Authorization header
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            if auth_header.startswith('Bearer '):
+                token = auth_header.split(" ")[1]
+
+        if not token:
+            return jsonify({"message": "Token is missing!"}), 401
+
+        try:
+            # Decode the token
+            data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            current_user = data['username']
+        except jwt.ExpiredSignatureError:
+            return jsonify({"message": "Token has expired!"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"message": "Invalid token!"}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 
 # Register User Endpoint
 @app.route('/register', methods=['POST'])
@@ -44,7 +77,12 @@ def register():
                    VALUES (%s, %s, %s, %s, %s, %s)"""
         execute_sql_query(query, args=(username, email, hashed_password.decode('utf-8'), full_name, bio, location))
         get_sql_database_connection().commit()
-        return jsonify({"message": "User registered successfully!"}), 201
+        token = jwt.encode(
+            {"username": username, "exp": datetime.utcnow() + timedelta(hours=TOKEN_EXPIRATION_TIME_IN_HOURS)},
+            SECRET_KEY,
+            algorithm="HS256"
+        )
+        return jsonify({"message": "User registered successfully!", "results": {"token": token}}), 201
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
@@ -69,12 +107,18 @@ def login():
 
     # Verify the password
     if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
-        return jsonify({"message": "Login successful"}), 200
+        token = jwt.encode(
+            {"username": username, "exp": datetime.utcnow() + timedelta(hours=TOKEN_EXPIRATION_TIME_IN_HOURS)},
+            SECRET_KEY,
+            algorithm="HS256"
+        )
+        return jsonify({"message": "Login successful", "results": {"token": token}}), 200
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
 @app.route('/searchEvents', methods=['GET'])
-def search():
+@token_required
+def search(current_user):
     query_params = request.args
     search_params = {}
 
