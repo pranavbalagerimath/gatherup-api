@@ -124,8 +124,7 @@ def login():
         return jsonify({"error": "Invalid username or password"}), 401
 
 @app.route('/searchEvents', methods=['GET'])
-@token_required
-def search(current_user):
+def search():
     query_params = request.args
     search_params = {}
 
