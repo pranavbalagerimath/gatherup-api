@@ -42,7 +42,7 @@ def register():
     try:
         query = """INSERT INTO Users (username, email, password_hash, full_name, bio, location)
                    VALUES (%s, %s, %s, %s, %s, %s)"""
-        execute_sql_query(query, args=(username, email, hashed_password, full_name, bio, location))
+        execute_sql_query(query, args=(username, email, hashed_password.decode('utf-8'), full_name, bio, location))
         get_sql_database_connection().commit()
         return jsonify({"message": "User registered successfully!"}), 201
     except Exception as err:
