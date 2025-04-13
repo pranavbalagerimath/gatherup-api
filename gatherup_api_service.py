@@ -124,9 +124,9 @@ def login():
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
-@app.route('/searchEvents', methods=['GET'])
+@app.route('/searchEvents', methods=['POST'])
 def search():
-    query_params = request.args
+    query_params = request.json
     search_params = {}
 
     state = query_params.get('state', '')

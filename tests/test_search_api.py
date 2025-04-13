@@ -63,7 +63,7 @@ def test_client():
     ({"state": "CA"}, 0)  # No events in California
 ])
 def test_search_events(test_client, query_params, expected_count):
-    response = test_client.get("/searchEvents", query_string=query_params)
+    response = test_client.post("/searchEvents", json=query_params)
     assert response.status_code == 200
     data = response.get_json()["data"]
     assert len(data) == expected_count
