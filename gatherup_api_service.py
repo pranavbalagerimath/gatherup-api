@@ -133,10 +133,11 @@ def get_landing_events():
 @app.route('/searchEvents', methods=['POST'])
 def search():
     query_params = request.json
+    print(query_params)
     search_params = {}
 
     state = query_params.get('state', '')
-    if state != '':
+    if state and state != '':
         search_params['venue.state'] = state
 
     city = query_params.get('city', '')
@@ -153,10 +154,17 @@ def search():
         end_date = start_date + timedelta(days=1)
         search_params['date_time'] = {'$gte': start_date.isoformat(), '$lt': end_date.isoformat()}
 
-    category = query_params.get('category', '')
-    if category != '':
-        search_params['category'] = category
+    # Fix the categories parameter handling
+    categories = query_params.get('categories', [])
+    if categories:
+        # If it's a string, use it directly
+        if isinstance(categories, str):
+            search_params['classifications.genre'] = categories
+        # If it's a non-empty list, use $in operator to match any of the categories
+        elif isinstance(categories, list) and len(categories) > 0:
+            search_params['classifications.genre'] = {"$in": categories}
 
+    print("Final search parameters:", search_params)
     events = search_events(search_params)
 
     return jsonify({'data': events}), 200
