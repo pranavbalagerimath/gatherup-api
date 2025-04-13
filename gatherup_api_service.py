@@ -4,7 +4,7 @@ import pandas as pd
 from flask_cors import CORS
 from database_utils import execute_sql_query, get_sql_database_connection
 from datetime import datetime, timedelta
-from mongo_database_utils import search_events
+from mongo_database_utils import search_events, get_random_events
 import os
 import jwt
 from functools import wraps
@@ -123,6 +123,12 @@ def login():
         return jsonify({"message": "Login successful", "results": {"token": token}}), 200
     else:
         return jsonify({"error": "Invalid username or password"}), 401
+
+
+@app.route('/getLandingEvents', methods=['GET'])
+def get_landing_events():
+    events = get_random_events(size=50)
+    return jsonify({'data': events}), 200
 
 @app.route('/searchEvents', methods=['POST'])
 def search():
