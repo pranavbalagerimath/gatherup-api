@@ -60,6 +60,7 @@ def register():
     full_name = data.get('full_name', '')
     bio = data.get('bio', '')
     location = data.get('location', '')
+    preferences = data.get('preferences', [])
 
     if not username or not email or not password:
         return jsonify({"error": "Username, email, and password are required"}), 400
@@ -81,9 +82,9 @@ def register():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     try:
-        query = """INSERT INTO Users (username, email, password_hash, full_name, bio, location)
-                   VALUES (%s, %s, %s, %s, %s, %s)"""
-        execute_sql_query(query, args=(username, email, hashed_password.decode('utf-8'), full_name, bio, location))
+        query = """INSERT INTO Users (username, email, password_hash, full_name, bio, location, preferences)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        execute_sql_query(query, args=(username, email, hashed_password.decode('utf-8'), full_name, bio, location, preferences))
         get_sql_database_connection().commit()
         token = jwt.encode(
             {"username": username, "exp": datetime.utcnow() + timedelta(hours=TOKEN_EXPIRATION_TIME_IN_HOURS)},

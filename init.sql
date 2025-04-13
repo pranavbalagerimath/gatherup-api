@@ -7,5 +7,6 @@ CREATE TABLE Users (
     bio TEXT,
     profile_picture_url VARCHAR(255),
     location VARCHAR(255),
+    preferences TEXT[],
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
