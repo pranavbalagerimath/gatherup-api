@@ -152,7 +152,7 @@ def search():
     if event_date != '':
         start_date = datetime.strptime(event_date, '%Y-%m-%d')
         end_date = start_date + timedelta(days=1)
-        search_params['date_time'] = {'$gte': start_date.isoformat(), '$lt': end_date.isoformat()}
+        search_params['dto_date_time'] = {'$gte': start_date, '$lt': end_date}
 
     # Fix the categories parameter handling
     categories = query_params.get('categories', [])
@@ -168,7 +168,6 @@ def search():
     events = search_events(search_params)
 
     return jsonify({'data': events}), 200
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

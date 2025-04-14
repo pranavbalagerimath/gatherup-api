@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 from bson import ObjectId
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -20,24 +21,27 @@ def test_client():
         {
             "name": "Hamilton (NY)",
             "date_time": "2025-03-05T00:00:00Z",
+            "dto_date_time": datetime.today().replace(hour=0, minute=0, second=0, microsecond=0),
             "venue": {
                 "name": "Richard Rodgers Theatre",
                 "city": "New York",
                 "state": "NY",
                 "country": "US"
             },
-            "category": "Arts & Theatre",
+            "classifications":
+                {"genre": "Arts & Theatre"},
         },
         {
             "name": "Phantom of the Opera",
             "date_time": "2025-03-10T00:00:00Z",
+            "dto_date_time": (datetime.today() + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0),
             "venue": {
                 "name": "Majestic Theatre",
                 "city": "Chicago",
                 "state": "IL",
                 "country": "US"
             },
-            "category": "Musicals",
+            "classifications": {"genre": "Musicals"},
         }
     ]
 
@@ -57,9 +61,9 @@ def test_client():
     ({"state": "NY"}, 1),  # Only 1 event in NY
     ({"city": "Chicago"}, 1),  # Only 1 event in Chicago
     ({"name": "Hamilton"}, 1),  # Partial match with regex
-    ({"eventDate": "2025-03-05"}, 1),  # Exact date match
-    ({"category": "Musicals"}, 1),  # Category filter
-    ({"state": "NY", "category": "Arts & Theatre"}, 1),  # Multiple filters
+    ({"eventDate": (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d")}, 1),  # Exact date match
+    ({"categories": "Musicals"}, 1),  # Category filter
+    ({"state": "NY", "categories": "Arts & Theatre"}, 1),  # Multiple filters
     ({"state": "CA"}, 0)  # No events in California
 ])
 def test_search_events(test_client, query_params, expected_count):
