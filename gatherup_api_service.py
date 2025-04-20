@@ -148,7 +148,7 @@ def search():
     if event_name != '':
         search_params['name'] = {"$regex": event_name, "$options": "i"}
 
-    event_date = query_params.get('eventDate', '')
+    event_date = query_params.get('date', '')
     if event_date != '':
         start_date = datetime.strptime(event_date, '%Y-%m-%d')
         end_date = start_date + timedelta(days=1)

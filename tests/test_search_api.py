@@ -61,7 +61,7 @@ def test_client():
     ({"state": "NY"}, 1),  # Only 1 event in NY
     ({"city": "Chicago"}, 1),  # Only 1 event in Chicago
     ({"name": "Hamilton"}, 1),  # Partial match with regex
-    ({"eventDate": (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d")}, 1),  # Exact date match
+    ({"date": (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d")}, 1),  # Exact date match
     ({"categories": "Musicals"}, 1),  # Category filter
     ({"state": "NY", "categories": "Arts & Theatre"}, 1),  # Multiple filters
     ({"state": "CA"}, 0)  # No events in California
