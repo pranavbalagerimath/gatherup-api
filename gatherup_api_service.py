@@ -169,5 +169,24 @@ def search():
 
     return jsonify({'data': events}), 200
 
+@app.route('/getPreferences', methods=['POST'])
+def get_preferences():
+    query_params = request.json
+
+    username = query_params.get("username")
+
+    if not username:
+        return jsonify({'error': 'username missing in the request'}), 500
+    query = f'''
+    select preferences from users where username='{username}'
+    '''
+    cursor = execute_sql_query(query)
+    result = cursor.fetchall()
+
+    if not result:
+        return jsonify({'error': 'User does not exist in the database'}), 500
+
+    return jsonify({'data': result[0][0]}), 200
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
