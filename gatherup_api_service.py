@@ -8,6 +8,7 @@ from mongo_database_utils import search_events, get_random_events
 import os
 import jwt
 from functools import wraps
+import requests
 
 app = Flask(__name__)
 
@@ -187,6 +188,20 @@ def get_preferences():
         return jsonify({'error': 'User does not exist in the database'}), 500
 
     return jsonify({'data': result[0][0]}), 200
+
+@app.route('/scrape_url', methods=['POST'])
+def get_scrape_data():
+    query_params = request.json
+
+    url = query_params.get('url')
+    headers =  {"User-Agent": "Mozilla/5.0"}
+    if url:
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            print(f"Failed to fetch data. Status code: {response.status_code}")
+            return None
+        return response.text
+    return jsonify({'error': 'Missing URL parameter'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

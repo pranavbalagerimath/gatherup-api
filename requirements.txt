@@ -7,3 +7,4 @@ python-dotenv
 pytest
 PyJWT
 Flask-CORS
+requests
