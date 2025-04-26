@@ -231,7 +231,7 @@ def get_recommendation():
     if not result:
         return jsonify({'error': 'User does not exist in the database'}), 500
 
-    user_categories = result[0][0]
+    user_categories = result[0][0] if result[0][0] else ["Music", "Comedy"]
     user_cities = [result[0][1]] if result[0][1] else ["Los Angeles", "San Francisco", "New York"]
 
     # Initialize and get recommendations
