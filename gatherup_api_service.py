@@ -9,6 +9,8 @@ import os
 import jwt
 from functools import wraps
 import requests
+from tfidf_trainer import train_tfidf_model
+from recommender import MLRecommender
 
 app = Flask(__name__)
 
@@ -202,6 +204,45 @@ def get_scrape_data():
             return None
         return response.text
     return jsonify({'error': 'Missing URL parameter'}), 500
+
+@app.route('/train_recommendation_model', methods=['POST'])
+def train_recommender():
+    try:
+        train_tfidf_model()
+        return jsonify({'message': 'Training completed Successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/getRecommendation', methods=['POST'])
+def get_recommendation():
+    query_params = request.json
+
+    username = query_params.get('username')
+
+    if not username:
+        return jsonify({'error': 'Username must be present!'})
+
+    query = f'''
+        select preferences, location from users where username='{username}'
+        '''
+    cursor = execute_sql_query(query)
+    result = cursor.fetchall()
+
+    if not result:
+        return jsonify({'error': 'User does not exist in the database'}), 500
+
+    user_categories = result[0][0]
+    user_cities = [result[0][1]] if result[0][1] else ["Los Angeles", "San Francisco", "New York"]
+
+    # Initialize and get recommendations
+    recommender = MLRecommender()
+    results = recommender.recommend(
+        preferred_categories=user_categories,
+        preferred_locations=user_cities,
+        top_n=20
+    )
+
+    return jsonify({'data': results}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

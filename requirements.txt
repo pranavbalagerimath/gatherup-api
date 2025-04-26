@@ -8,3 +8,6 @@ pytest
 PyJWT
 Flask-CORS
 requests
+scikit-learn
+joblib
+numpy
