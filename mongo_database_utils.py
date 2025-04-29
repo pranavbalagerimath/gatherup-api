@@ -29,7 +29,7 @@ def search_events(search_params):
     documents = collection.find(
         search_params,
         {"_embedding": 0}
-    ).sort('dto_date_time', 1)
+    ).sort('dto_date_time', -1)
 
     document_list = list(documents)
     return document_list
@@ -37,9 +37,14 @@ def search_events(search_params):
 def get_random_events(size):
     event_collection = 'events'
     collection = get_collection(event_collection)
+
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+
     random_docs = list(collection.aggregate(
-        [{"$sample": {"size": size}},
-          {"$project": {"_embedding": 0}}
+        [
+            {"$match": {"dto_date_time": {"$gte": today}}},
+            {"$sample": {"size": size}},
+            {"$project": {"_embedding": 0}}
         ])
     )
     return random_docs
